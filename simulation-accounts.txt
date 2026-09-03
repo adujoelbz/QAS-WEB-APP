@@ -1,0 +1,16 @@
+Queueless AI training simulation accounts
+Created: 2026-09-03
+
+PATIENT ACCOUNTS
+1. Email: qas.sim.patient1@example.test | Password: QasPatient123!
+2. Email: qas.sim.patient2@example.test | Password: QasPatient123!
+3. Email: qas.sim.patient3@example.test | Password: QasPatient123!
+4. Email: qas.sim.patient4@example.test | Password: QasPatient123!
+5. Email: qas.sim.patient5@example.test | Password: QasPatient123!
+
+DOCTOR ACCOUNTS
+1. Email: qas.sim.doctor1@example.test | Password: QasDoctor123! | Doctor profile ID: 1
+2. Email: qas.sim.doctor2@example.test | Password: QasDoctor123! | Doctor profile ID: 2
+3. Email: qas.sim.doctor3@example.test | Password: QasDoctor123! | Doctor profile ID: 3
+
+These are development/test credentials only. Change or remove them before deploying outside the local environment.
