@@ -1,6 +1,4 @@
-const AI_BASE = (
-  process.env.REACT_APP_AI_URL || "https://qas-production-537a.up.railway.app/api"
-).replace(/\/$/, "");
+const AI_BASE = "https://qas-production-537a.up.railway.app/api";
 
 async function aiRequest(path, payload) {
   const response = await fetch(`${AI_BASE}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
