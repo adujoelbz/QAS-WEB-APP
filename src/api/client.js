@@ -1,4 +1,6 @@
-const API_BASE = "https://qas-production-537a.up.railway.app";
+const API_BASE = (
+  process.env.REACT_APP_API_URL || "https://qas-production-537a.up.railway.app"
+).replace(/\/$/, "");
 
 export async function request(path, options = {}) {
   const headers = new Headers(options.headers || {});

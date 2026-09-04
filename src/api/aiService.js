@@ -1,4 +1,6 @@
-const AI_BASE = (process.env.REACT_APP_AI_URL || 'http://localhost:5000').replace(/\/$/, '');
+const AI_BASE = (
+  process.env.REACT_APP_AI_URL || "https://qas-production-537a.up.railway.app"
+).replace(/\/$/, "");
 
 async function aiRequest(path, payload) {
   const response = await fetch(`${AI_BASE}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
