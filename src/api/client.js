@@ -1,4 +1,4 @@
-const API_BASE = "https://qas-production-537a.up.railway.app";
+const API_BASE = "https://qas-production-537a.up.railway.app/api";
 
 export async function request(path, options = {}) {
   const headers = new Headers(options.headers || {});

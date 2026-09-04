@@ -1,5 +1,5 @@
 const AI_BASE = (
-  process.env.REACT_APP_AI_URL || "https://qas-production-537a.up.railway.app"
+  process.env.REACT_APP_AI_URL || "https://qas-production-537a.up.railway.app/api"
 ).replace(/\/$/, "");
 
 async function aiRequest(path, payload) {
