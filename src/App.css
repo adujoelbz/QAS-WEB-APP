@@ -2188,6 +2188,44 @@ button {
   padding-top: 18px;
   margin-top: 18px;
 }
+.history-file-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+.history-file-list > .eyebrow {
+  margin: 0;
+}
+.history-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid #edf2ef;
+  padding-top: 10px;
+}
+.history-file > span {
+  min-width: 0;
+}
+.history-file b,
+.history-file small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.history-file b {
+  font-size: 12px;
+}
+.history-file small {
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 3px;
+}
+.pending-files {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
 .questions-panel > .panel-heading svg {
   color: var(--emerald);
 }

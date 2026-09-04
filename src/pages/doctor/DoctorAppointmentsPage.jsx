@@ -6,6 +6,7 @@ import {
   labelStatus,
 } from "../../components/common/AppUi";
 import QuestionsPanel from "../patient/QuestionsPanel";
+import { doctorService } from "../../api/doctorService";
 
 export default function DoctorAppointmentsPage({
   appointments,
@@ -17,6 +18,7 @@ export default function DoctorAppointmentsPage({
   const [status, setStatus] = useState("");
   const [date, setDate] = useState("");
   const [questionsFor, setQuestionsFor] = useState(null);
+  const [historyFor, setHistoryFor] = useState(null);
   const questionsRef = useRef(null);
   useEffect(() => {
     if (questionsFor) {
@@ -30,6 +32,21 @@ export default function DoctorAppointmentsPage({
   );
   const apply = () =>
     onRefresh({ ...(status ? { status } : {}), ...(date ? { date } : {}) });
+  const downloadHistory = async (appointment, file) => {
+    try {
+      const result = await doctorService.getMedicalHistoryDownload(appointment.id, file.publicId);
+      const link = document.createElement("a");
+      link.href = result.downloadUrl;
+      link.target = "_blank";
+      link.rel = "noreferrer";
+      link.download = result.originalFilename || file.originalFileName || "medical-history-file";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (err) {
+      onToast(err.message);
+    }
+  };
   return (
     <div className="view-stack">
       <div className="page-heading">
@@ -101,6 +118,7 @@ export default function DoctorAppointmentsPage({
               onStart={onStart}
               onStatus={onStatus}
               onQuestions={setQuestionsFor}
+              onHistory={setHistoryFor}
             />
           ))
         ) : (
@@ -123,10 +141,24 @@ export default function DoctorAppointmentsPage({
           <QuestionsPanel appointmentId={questionsFor} doctorMode onToast={onToast} />
         </section>
       )}
+      {historyFor && (
+        <section className="panel history-file-list" ref={questionsRef}>
+          <div className="panel-heading">
+            <div><p className="eyebrow">PATIENT #{historyFor.patientId || "-"}</p><h2>Medical history</h2></div>
+            <button type="button" className="icon-button" onClick={() => setHistoryFor(null)} aria-label="Close medical history"><Icon name="close" size={15} /></button>
+          </div>
+          {(historyFor.medicalHistory?.files || []).map((file) => (
+            <div className="history-file" key={file.publicId}>
+              <span><b>{file.originalFileName || "Medical history file"}</b><small>{formatFileSize(file.fileSize)}</small></span>
+              <button type="button" className="icon-button" onClick={() => downloadHistory(historyFor, file)} aria-label="Download medical history file"><Icon name="download" size={14} /></button>
+            </div>
+          ))}
+        </section>
+      )}
     </div>
   );
 }
-function AppointmentRow({ item, onStart, onStatus, onQuestions }) {
+function AppointmentRow({ item, onStart, onStatus, onQuestions, onHistory }) {
   const actionable = [
     "APPROVED",
     "CONFIRMED",
@@ -158,6 +190,7 @@ function AppointmentRow({ item, onStart, onStatus, onQuestions }) {
       </span>
       <div className="admin-actions">
         <button type="button" className="tiny-button" onClick={() => onQuestions(item.id)}>Q&A</button>
+        {item.medicalHistory?.files?.length > 0 && <button type="button" className="tiny-button" onClick={() => onHistory(item)}>History</button>}
         {actionable &&
           !item.consultationStartedAt &&
           ["APPROVED", "CONFIRMED", "SCHEDULED"].includes(item.status) && (
@@ -191,4 +224,10 @@ function AppointmentRow({ item, onStart, onStatus, onQuestions }) {
       </div>
     </div>
   );
+}
+
+function formatFileSize(size) {
+  if (!size) return "";
+  if (size < 1024 * 1024) return `${Math.ceil(size / 1024)} KB`;
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
 }

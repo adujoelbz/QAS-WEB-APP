@@ -11,6 +11,7 @@ export const doctorService = {
   getAppointmentsByDoctor: (params = {}) => request(`/doctors/appointments?${query(params)}`),
   updateAppointmentStatus: (appointmentId, status, actualWaitTime) => request(`/doctors/appointments/${appointmentId}/status?${query({ status, actualWaitTime })}`, { method: 'PATCH' }),
   startConsultation: (appointmentId) => request(`/doctors/appointments/${appointmentId}/start`, { method: 'POST' }),
+  getMedicalHistoryDownload: (appointmentId, publicId) => request(`/doctors/appointments/${appointmentId}/medical-history/download?${query({ publicId })}`),
 };
 
 export default doctorService;
