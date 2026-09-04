@@ -1,14 +1,20 @@
-export { request, json, saveSession, loadSession, clearSession } from './client';
-export { default as authService } from './authService';
-export { default as patientService } from './patientService';
-export { default as appointmentService } from './appointmentService';
-export { default as departmentService } from './departmentService';
-export { default as hospitalService } from './hospitalService';
-export { default as doctorService } from './doctorService';
-export { default as adminService } from './adminService';
-export { default as questionService } from './questionService';
-export { default as healthService } from './healthService';
-export { default as aiService } from './aiService';
-export { default as debugService } from './debugService';
-export { default as queueService } from './queueService';
-export { default as notificationService } from './notificationService';
+export {
+  request,
+  json,
+  saveSession,
+  loadSession,
+  clearSession,
+} from "./client";
+export { default as authService } from "./authService";
+export { default as patientService } from "./patientService";
+export { default as appointmentService } from "./appointmentService";
+export { default as departmentService } from "./departmentService";
+export { default as hospitalService } from "./hospitalService";
+export { default as doctorService } from "./doctorService";
+export { default as adminService } from "./adminService";
+export { default as questionService } from "./questionService";
+export { default as healthService } from "./healthService";
+export { default as aiService } from "./aiService";
+export { default as debugService } from "./debugService";
+export { default as queueService } from "./queueService";
+export { default as notificationService } from "./notificationService";
