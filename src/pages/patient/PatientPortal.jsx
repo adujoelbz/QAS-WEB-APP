@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { appointmentService } from "../../api/appointmentService";
-import { departmentService } from "../../api/departmentService";
 import { patientService } from "../../api/patientService";
 import PatientSidebar from "../../components/layout/PatientSidebar";
 import PortalHeader from "../../components/layout/PortalHeader";
@@ -20,46 +19,42 @@ const titles = {
   hospitals: "Find hospitals",
   profile: "My profile",
 };
+
 export default function PatientPortal({ session, onLogout }) {
   const [view, setView] = useState("overview");
   const [collapsed, setCollapsed] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
   const [profile, setProfile] = useState(null);
   const [appointments, setAppointments] = useState([]);
-  const [departments, setDepartments] = useState([]);
   const [busy, setBusy] = useState(true);
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
+
   const notify = (message) => {
     setToast(message);
     window.setTimeout(() => setToast(""), 2800);
   };
+
   useEffect(() => {
     setBusy(true);
-    Promise.all([
-      patientService.getProfile(),
-      appointmentService.listMine(),
-      departmentService.listSpecialties()
-        .then((specialties) => Promise.all((specialties || []).map((specialty) => departmentService.listPublic({ specialty }))))
-        .then((groups) => groups.flat())
-        .catch(() => []),
-    ])
-      .then(([patient, page, list]) => {
+    Promise.all([patientService.getProfile(), appointmentService.listMine()])
+      .then(([patient, page]) => {
         setProfile(patient);
         setAppointments(page?.content || []);
-        setDepartments(list || []);
         setError("");
       })
       .catch((err) => setError(err.message))
       .finally(() => setBusy(false));
   }, []);
+
   const patient = profile || {
     firstName: "Patient",
     lastName: "",
     email: session.email,
   };
+
   const book = async (payload) => {
     try {
       const created = await appointmentService.create(payload);
@@ -71,6 +66,7 @@ export default function PatientPortal({ session, onLogout }) {
       notify(err.message);
     }
   };
+
   return (
     <div className="app-shell">
       <PatientSidebar
@@ -84,6 +80,7 @@ export default function PatientPortal({ session, onLogout }) {
       />
       <div className="main-column">
         <PortalHeader
+          role={session.role}
           title={titles[view]}
           profile={patient}
           onMenu={() => setMobileNav(true)}
@@ -125,17 +122,34 @@ export default function PatientPortal({ session, onLogout }) {
           )}
         </main>
       </div>
+
       {bookingOpen && (
         <BookingModal
-          departments={departments}
+          open={bookingOpen}
           close={() => setBookingOpen(false)}
           onBooked={book}
         />
       )}
-      {selectedAppointment && <AppointmentDetailsModal appointment={selectedAppointment} close={() => setSelectedAppointment(null)} onToast={notify} onUpdated={(updated) => { setAppointments((items) => items.map((item) => item.id === updated.id ? updated : item)); setSelectedAppointment(updated); }} />}
+
+      {selectedAppointment && (
+        <AppointmentDetailsModal
+          appointment={selectedAppointment}
+          close={() => setSelectedAppointment(null)}
+          onToast={notify}
+          onUpdated={(updated) => {
+            setAppointments((items) =>
+              items.map((item) => (item.id === updated.id ? updated : item)),
+            );
+            setSelectedAppointment(updated);
+          }}
+        />
+      )}
+
       {toast && (
         <div className="toast">
-          <span className="toast-check"><Icon name="check" size={13} /></span>
+          <span className="toast-check">
+            <Icon name="check" size={13} />
+          </span>
           {toast}
         </div>
       )}

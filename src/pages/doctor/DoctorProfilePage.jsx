@@ -11,20 +11,31 @@ const dayOptions = [
   "SATURDAY",
   "SUNDAY",
 ];
+const selectedDays = (availableDays) =>
+  Array.isArray(availableDays)
+    ? availableDays
+    : availableDays && typeof availableDays === "object"
+      ? dayOptions.filter((day) => Object.prototype.hasOwnProperty.call(availableDays, day))
+      : [];
+
 export default function DoctorProfilePage({ profile, mode, onSaved, onToast }) {
   const [duration, setDuration] = useState(
     profile.consultationDurationMinutes || 30,
   );
-  const [days, setDays] = useState(profile.availableDays || []);
+  const [days, setDays] = useState(selectedDays(profile.availableDays));
   const [dayOfWeek, setDayOfWeek] = useState(
-    profile.availableDays?.[0] || "MONDAY",
+    selectedDays(profile.availableDays)[0] || "MONDAY",
   );
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("17:00");
   const [saving, setSaving] = useState(false);
   useEffect(() => {
     setDuration(profile.consultationDurationMinutes || 30);
-    setDays(profile.availableDays || []);
+    const nextDays = selectedDays(profile.availableDays);
+    setDays(nextDays);
+    setDayOfWeek((current) =>
+      nextDays.includes(current) ? current : nextDays[0] || "MONDAY",
+    );
   }, [profile]);
   const saveDuration = async () => {
     setSaving(true);
@@ -48,19 +59,30 @@ export default function DoctorProfilePage({ profile, mode, onSaved, onToast }) {
     event.preventDefault();
     setSaving(true);
     try {
+      const existingAvailability =
+        profile.availableDays && typeof profile.availableDays === "object" && !Array.isArray(profile.availableDays)
+          ? profile.availableDays
+          : {};
+      const availableDays = days.reduce(
+        (result, day) => ({
+          ...result,
+          [day]: existingAvailability[day] || [`${startTime}-${endTime}`],
+        }),
+        {},
+      );
       const payload = {
         doctorId: profile.id,
         dayOfWeek,
         startTime,
         endTime,
         slotDurationMinutes: Number(duration),
-        availableDays: days,
+        availableDays,
       };
       const updated = await doctorService.updateAvailability(payload);
       onSaved((current) => ({
         ...current,
         ...(updated || {}),
-        availableDays: days,
+        availableDays,
       }));
       onToast("Availability updated");
     } catch (err) {

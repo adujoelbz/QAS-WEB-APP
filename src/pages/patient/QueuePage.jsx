@@ -53,7 +53,7 @@ export default function QueuePage({ appointments, onToast }) {
             <strong>#{current.queuePosition || "--"}</strong>
           </h2>
           <p>
-            {current.doctor || "Assigned doctor"} -{" "}
+            {current.doctorName || current.doctor || (current.doctorId ? `Doctor #${current.doctorId}` : "Assigned doctor")} -{" "}
             {formatDate(current.requestedDate)} at{" "}
             {formatTime(current.requestedTime)}
           </p>
@@ -72,7 +72,7 @@ export default function QueuePage({ appointments, onToast }) {
         <div className="queue-time">
           <small>ESTIMATED WAIT</small>
           <strong>
-            {current.estimatedWaitTimeMinutes || "--"}
+            {current.estimatedWaitTimeMinutes ?? current.estimatedWaitMinutes ?? "--"}
             <span> min</span>
           </strong>
           <button

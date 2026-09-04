@@ -9,6 +9,7 @@ export default function AdminAppointmentsPage({
   appointments,
   onApprove,
   onReject,
+  onRefresh,
 }) {
   const [status, setStatus] = useState("");
   const filtered = status
@@ -26,7 +27,7 @@ export default function AdminAppointmentsPage({
         </div>
         <button
           className="outline-button"
-          onClick={() => window.location.reload()}
+          onClick={onRefresh}
         >
           <Icon name="activity" /> Refresh
         </button>

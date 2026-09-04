@@ -2,11 +2,21 @@ import { Icon, initials } from "../common/AppUi";
 
 export default function PortalHeader({
   admin = false,
+  role,
   title,
   profile,
   onNotify,
   onMenu,
 }) {
+  const userRole = admin ? "ADMIN" : String(role || profile?.role || "PATIENT").toUpperCase();
+  const roleLabel = {
+    ADMIN: "Administrator",
+    DOCTOR: "Doctor",
+    PATIENT: "Patient",
+  }[userRole] || "User";
+  const displayName = admin
+    ? "Administrator"
+    : `${profile?.firstName || roleLabel} ${profile?.lastName || ""}`.trim();
   return (
     <header className="topbar">
       <button
@@ -33,12 +43,8 @@ export default function PortalHeader({
         <div className="user-chip">
           <span className="avatar">{admin ? "AD" : initials(profile)}</span>
           <span className="user-copy">
-            <b>
-              {admin
-                ? "Administrator"
-                : `${profile.firstName || "Patient"} ${profile.lastName || ""}`}
-            </b>
-            <small>{admin ? profile.email : "Patient"}</small>
+            <b>{displayName}</b>
+            <small>{roleLabel}</small>
           </span>
           <Icon name="chevronDown" size={15} />
         </div>

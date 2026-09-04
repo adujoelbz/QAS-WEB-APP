@@ -5,12 +5,20 @@ import {
   labelStatus,
 } from "../../components/common/AppUi";
 
+const availableDayNames = (availableDays) =>
+  Array.isArray(availableDays)
+    ? availableDays
+    : availableDays && typeof availableDays === "object"
+      ? Object.keys(availableDays)
+      : [];
+
 export default function DoctorDashboardPage({
   profile,
   appointments,
   schedule,
   onNavigate,
 }) {
+  const dayNames = availableDayNames(profile.availableDays);
   const today = new Date().toISOString().slice(0, 10);
   const todays = appointments.filter((item) => item.requestedDate === today);
   const upcoming = appointments
@@ -107,8 +115,8 @@ export default function DoctorDashboardPage({
             <Icon name="calendar" size={15} />
             <span>
               Available{" "}
-              {profile.availableDays?.length
-                ? profile.availableDays.join(", ")
+              {dayNames.length
+                ? dayNames.join(", ")
                 : "days not configured"}
             </span>
           </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Icon,
   formatDate,
@@ -17,6 +17,12 @@ export default function DoctorAppointmentsPage({
   const [status, setStatus] = useState("");
   const [date, setDate] = useState("");
   const [questionsFor, setQuestionsFor] = useState(null);
+  const questionsRef = useRef(null);
+  useEffect(() => {
+    if (questionsFor) {
+      questionsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [questionsFor]);
   const filtered = appointments.filter(
     (item) =>
       (!status || item.status === status) &&
@@ -103,7 +109,20 @@ export default function DoctorAppointmentsPage({
           </div>
         )}
       </section>
-      {questionsFor && <section className="panel"><QuestionsPanel appointmentId={questionsFor} doctorMode onToast={onToast} /></section>}
+      {questionsFor && (
+        <section className="panel" ref={questionsRef}>
+          <div className="panel-heading">
+            <div>
+              <p className="eyebrow">APPOINTMENT #{questionsFor}</p>
+              <h2>Questions & answers</h2>
+            </div>
+            <button type="button" className="icon-button" onClick={() => setQuestionsFor(null)} aria-label="Close questions">
+              <Icon name="close" size={15} />
+            </button>
+          </div>
+          <QuestionsPanel appointmentId={questionsFor} doctorMode onToast={onToast} />
+        </section>
+      )}
     </div>
   );
 }
@@ -138,8 +157,9 @@ function AppointmentRow({ item, onStart, onStatus, onQuestions }) {
         {labelStatus(item.status)}
       </span>
       <div className="admin-actions">
-        <button className="tiny-button" onClick={() => onQuestions(item.id)}>Q&A</button>
+        <button type="button" className="tiny-button" onClick={() => onQuestions(item.id)}>Q&A</button>
         {actionable &&
+          !item.consultationStartedAt &&
           ["APPROVED", "CONFIRMED", "SCHEDULED"].includes(item.status) && (
             <button
               className="tiny-button approve"

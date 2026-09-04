@@ -30,7 +30,7 @@ export default function OverviewPage({
             <div>
               <h2>{next.department || "Medical consultation"}</h2>
               <p className="muted">
-                {next.doctor || "Doctor assignment pending"}
+                {next.doctorName || next.doctor || (next.doctorId ? `Doctor #${next.doctorId}` : "Doctor assignment pending")}
               </p>
               <div className="appointment-meta">
                 <span>
@@ -57,7 +57,7 @@ export default function OverviewPage({
             <span>
               <b>Estimated wait</b>{" "}
               <strong>
-                {next.estimatedWaitTimeMinutes
+                {next.estimatedWaitTimeMinutes != null
                   ? `${next.estimatedWaitTimeMinutes} min`
                   : "Pending"}
               </strong>

@@ -22,10 +22,16 @@ export default function AdminPortal({ session, onLogout }) {
   const notify = (message) => { setToast(message); window.setTimeout(() => setToast(''), 2800); };
   const load = async () => { setBusy(true); try { const [dashboard, page] = await Promise.all([adminService.getDashboardStats(), appointmentService.listAll()]); setStats(dashboard); setAppointments(page?.content || []); setError(''); } catch (err) { setError(err.message); } finally { setBusy(false); } };
   useEffect(() => { load(); }, []);
+  useEffect(() => { if (view === 'dashboard' || view === 'appointments') load(); }, [view]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (view !== 'appointments') return undefined;
+    const timer = window.setInterval(load, 30000);
+    return () => window.clearInterval(timer);
+  }, [view]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (view === 'reports') adminService.getPredictionReports({ from: '2020-01-01T00:00:00Z', to: new Date().toISOString() }).then(setReports).catch((err) => setError(err.message)); if (view === 'audit') adminService.getAuditLogs().then((page) => setLogs(page?.content || [])).catch((err) => setError(err.message)); }, [view]);
-  const approve = async (item) => { const doctorId = window.prompt('Enter the doctor ID to assign'); if (!doctorId) return; try { const updated = await appointmentService.approve(item.id, doctorId); setAppointments((items) => items.map((entry) => entry.id === item.id ? updated : entry)); notify('Appointment approved'); } catch (err) { notify(err.message); } };
+  const approve = async (item) => { try { const updated = await appointmentService.approve(item.id); setAppointments((items) => items.map((entry) => entry.id === item.id ? updated : entry)); notify(`Appointment approved and assigned to ${updated.doctorName || updated.doctor || `doctor #${updated.doctorId}`}`); } catch (err) { notify(err.message); } };
   const reject = async (item) => { try { const updated = await appointmentService.reject(item.id); setAppointments((items) => items.map((entry) => entry.id === item.id ? updated : entry)); notify('Appointment rejected'); } catch (err) { notify(err.message); } };
-  let content = <AdminDashboardPage stats={stats} appointments={appointments} onNavigate={setView} />; if (view === 'appointments') content = <AdminAppointmentsPage appointments={appointments} onApprove={approve} onReject={reject} />; if (view === 'queues') content = <AdminQueuesPage onToast={notify} />; if (view === 'ai') content = <AdminAiPage onToast={notify} />; if (view === 'reports') content = <AdminReportsPage reports={reports} />; if (view === 'audit') content = <AdminAuditPage logs={logs} />;
+  let content = <AdminDashboardPage stats={stats} appointments={appointments} onNavigate={setView} />; if (view === 'appointments') content = <AdminAppointmentsPage appointments={appointments} onApprove={approve} onReject={reject} onRefresh={load} />; if (view === 'queues') content = <AdminQueuesPage onToast={notify} />; if (view === 'ai') content = <AdminAiPage onToast={notify} />; if (view === 'reports') content = <AdminReportsPage reports={reports} />; if (view === 'audit') content = <AdminAuditPage logs={logs} />;
   if (view === 'hospitals') content = <AdminHospitalsPage onToast={notify} />;
   if (view === 'notifications') content = <AdminNotificationsPage onToast={notify} />;
   if (view === 'doctors') content = <AdminDoctorsPage onToast={notify} />;

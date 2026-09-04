@@ -64,7 +64,7 @@ export default function AppointmentsPage({ appointments, onBook, onOpen }) {
                 </span>
                 <div>
                   <b>{item.department || "Department"}</b>
-                  <small>{item.doctor || "Doctor pending"}</small>
+                    <small>{item.doctorName || item.doctor || (item.doctorId ? `Doctor #${item.doctorId}` : "Doctor pending")}</small>
                 </div>
               </div>
               <div>
@@ -81,7 +81,7 @@ export default function AppointmentsPage({ appointments, onBook, onOpen }) {
                   <>
                     <b className="queue-number">#{item.queuePosition}</b>
                     <small>
-                      {item.estimatedWaitTimeMinutes || "--"} min est.
+                      {item.estimatedWaitTimeMinutes ?? "--"} min est.
                     </small>
                   </>
                 ) : (

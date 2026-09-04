@@ -45,17 +45,32 @@ export default function DoctorPortal({ session, onLogout }) {
   const load = useCallback(async () => {
     setBusy(true);
     try {
-      const [doctor, appointmentsPayload, schedulePayload] = await Promise.all([
+      const [doctorResult, appointmentsResult, scheduleResult] =
+        await Promise.allSettled([
         doctorService.getProfile(),
         doctorService.getAppointments(),
         doctorService.getSchedule(range.from, range.to),
       ]);
-      setProfile(doctor);
-      setAppointments(listItems(appointmentsPayload));
-      setSchedule(listItems(schedulePayload));
-      setError("");
-    } catch (err) {
-      setError(err.message);
+
+      const failures = [];
+      if (doctorResult.status === "fulfilled") {
+        setProfile(doctorResult.value);
+      } else {
+        failures.push(`Profile: ${doctorResult.reason?.message || "request failed"}`);
+      }
+      if (appointmentsResult.status === "fulfilled") {
+        setAppointments(listItems(appointmentsResult.value));
+      } else {
+        failures.push(
+          `Appointments: ${appointmentsResult.reason?.message || "request failed"}`,
+        );
+      }
+      if (scheduleResult.status === "fulfilled") {
+        setSchedule(listItems(scheduleResult.value));
+      } else {
+        failures.push(`Schedule: ${scheduleResult.reason?.message || "request failed"}`);
+      }
+      setError(failures.join(" | "));
     } finally {
       setBusy(false);
     }
@@ -151,6 +166,7 @@ export default function DoctorPortal({ session, onLogout }) {
       />
       <div className="main-column">
         <PortalHeader
+          role={session.role}
           title={titles[view]}
           profile={patient}
           onMenu={() => setMobileNav(true)}
