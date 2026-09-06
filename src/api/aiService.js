@@ -1,4 +1,4 @@
-const AI_BASE = "https://qas-production-537a.up.railway.app/api";
+const AI_BASE = 'https://ai-service-production-a5b3.up.railway.app';
 
 async function aiRequest(path, payload) {
   const response = await fetch(`${AI_BASE}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });

@@ -69,3 +69,14 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 # QAS-WEB-APP
+
+## Deployment environment variables
+
+Set these variables on the frontend service before building:
+
+```text
+REACT_APP_API_URL=https://<backend-domain>/api
+REACT_APP_AI_URL=https://<ai-service-domain>
+```
+
+`REACT_APP_AI_URL` must point directly to the Flask AI service. Its health endpoint is `/health`; do not point it at the Spring Boot backend's `/api` URL.
