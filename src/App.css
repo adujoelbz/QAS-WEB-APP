@@ -206,19 +206,6 @@ button {
   background: var(--wash);
   color: var(--emerald);
 }
-.notification-button {
-  position: relative;
-}
-.notification-button i {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #ee835c;
-  right: 5px;
-  top: 5px;
-  border: 1px solid #fff;
-}
 .user-chip {
   display: flex;
   align-items: center;

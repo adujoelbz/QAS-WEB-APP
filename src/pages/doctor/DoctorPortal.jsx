@@ -170,7 +170,6 @@ export default function DoctorPortal({ session, onLogout }) {
           title={titles[view]}
           profile={patient}
           onMenu={() => setMobileNav(true)}
-          onNotify={() => notify("You have no new notifications")}
         />
         <main className="content">
           {busy && (

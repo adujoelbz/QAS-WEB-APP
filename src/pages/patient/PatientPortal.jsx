@@ -84,7 +84,6 @@ export default function PatientPortal({ session, onLogout }) {
           title={titles[view]}
           profile={patient}
           onMenu={() => setMobileNav(true)}
-          onNotify={() => notify("You have no new notifications")}
         />
         <main className="content">
           {busy && <div className="loading-bar">Loading your care hub...</div>}
